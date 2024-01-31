@@ -1,4 +1,4 @@
-package com.example.netty.c5
+package com.example.netty.c8
 
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.ChannelInitializer
@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory
 import java.net.InetSocketAddress
 import java.util.*
 
-class NettyClient {
+class TestPipelineClient {
     companion object {
 
-        private val log = LoggerFactory.getLogger(NettyServer::class.java)
+        private val log = LoggerFactory.getLogger(TestPipelineClient::class.java)
 
         @JvmStatic
         fun main(args: Array<String>) {
