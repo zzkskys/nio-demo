@@ -1,4 +1,6 @@
 package com.example.chat.group
 
-class ChatGroup {
-}
+class ChatGroup(
+    val name: String,
+    val members: Set<String>
+)

@@ -1,8 +1,11 @@
 package com.example
 
+import com.example.chat.group.InMemoryGroupService
+import com.example.chat.session.InMemorySession
+import com.example.chat.user.InMemoryUserService
 import com.example.protocol.MessageCodecSharable
 import com.example.protocol.MessageProcotolDecoder
-import com.example.server.LoginHandler
+import com.example.server.*
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.nio.NioEventLoopGroup
@@ -18,6 +21,9 @@ fun main() {
 
     val logHandler = LoggingHandler(LogLevel.DEBUG)
     val messageCodecSharable = MessageCodecSharable()
+    val userService = InMemoryUserService()
+    val session = InMemorySession()
+    val groupService = InMemoryGroupService(session = session)
 
     try {
         val bootstrap = ServerBootstrap()
@@ -29,7 +35,11 @@ fun main() {
                         .addLast(MessageProcotolDecoder())
                         .addLast(logHandler)
                         .addLast(messageCodecSharable)
-                        .addLast(LoginHandler())
+                        .addLast(LoginHandler(userService = userService, session = session))
+                        .addLast(ChatHandler(session = session))
+                        .addLast(CreateGroupHandler(groupService = groupService))
+                        .addLast(GroupChatHandler(groupService = groupService))
+                        .addLast(QuitHandler(session = session))
                 }
             })
 

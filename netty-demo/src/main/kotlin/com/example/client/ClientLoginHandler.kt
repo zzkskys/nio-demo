@@ -18,6 +18,7 @@ class ClientLoginHandler : ChannelInboundHandlerAdapter() {
     private val waitForLogin = CountDownLatch(1)
 
     private val loginSuccess = AtomicBoolean(false)
+
     companion object {
         private val log = LoggerFactory.getLogger(ClientLoginHandler::class.java)
     }
@@ -49,20 +50,19 @@ class ClientLoginHandler : ChannelInboundHandlerAdapter() {
                 ctx.channel().close()
                 return@thread
             }
+            CurrentUserHolder.username = username
 
-            val menu = """
-                ===========操作菜单=================
-                send [username] [content]
-                gsend [group name] [content]
-                gcreate [group name] [m1,m2,m3...]
-                gjoin [group name]
-                gquit [group name]
-                quit
-                ===================================
-            """.trimIndent()
-            while (true){
-                println(menu)
-                val str = sc.nextLine()
+            while (true) {
+                println(CommandDecoder.menu)
+
+                val cmd = sc.nextLine()
+                if ("quit" == cmd) {
+                    ctx.channel().close()
+                    break
+                } else {
+                    val d = CommandDecoder(cmd)
+                    ctx.writeAndFlush(d.message)
+                }
             }
 
         }.start()
