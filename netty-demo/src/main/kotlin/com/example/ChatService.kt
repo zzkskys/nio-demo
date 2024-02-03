@@ -7,12 +7,17 @@ import com.example.protocol.MessageCodecSharable
 import com.example.protocol.MessageProcotolDecoder
 import com.example.server.*
 import io.netty.bootstrap.ServerBootstrap
+import io.netty.channel.ChannelDuplexHandler
+import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
+import io.netty.handler.timeout.IdleState
+import io.netty.handler.timeout.IdleStateEvent
+import io.netty.handler.timeout.IdleStateHandler
 
 
 fun main() {
@@ -32,6 +37,18 @@ fun main() {
             .childHandler(object : ChannelInitializer<SocketChannel>() {
                 override fun initChannel(ch: SocketChannel) {
                     ch.pipeline()
+                        //用来判断读时间过长或写时间过长
+                        .addLast(IdleStateHandler(5,0,0))
+                        .addLast(object : ChannelDuplexHandler(){
+                            //用来触发 IdleStateHandler 发送的事件
+                            override fun userEventTriggered(ctx: ChannelHandlerContext, evt: Any) {
+                                evt as IdleStateEvent
+                                if (evt.state() == IdleState.READER_IDLE) {
+                                    println("已经超过 5s 没有读到数据")
+                                    ctx.channel().close()
+                                }
+                            }
+                        })
                         .addLast(MessageProcotolDecoder())
                         .addLast(logHandler)
                         .addLast(messageCodecSharable)

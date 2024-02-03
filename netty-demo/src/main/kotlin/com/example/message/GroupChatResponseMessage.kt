@@ -6,6 +6,6 @@ data class GroupChatResponseMessage(
     val content: String
 ) : Message() {
     override fun getMessageType(): Int {
-        return CHAT_RESPONSE_MESSAGE
+        return GROUP_CHAT_RESPONSE_MESSAGE
     }
 }

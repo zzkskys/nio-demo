@@ -14,7 +14,9 @@ abstract class Message : Serializable {
      */
     open fun getSequenceId(): Int = 0
 
+
     companion object {
+
 
         /**
          * 登录
@@ -35,7 +37,6 @@ abstract class Message : Serializable {
          * 聊天回应
          */
         const val CHAT_RESPONSE_MESSAGE = 3
-
 
         /**
          * 群聊
@@ -72,6 +73,11 @@ abstract class Message : Serializable {
          * 退出组
          */
         const val GROUP_QUIT_REQUEST_MESSAGE = 12
+
+        /**
+         * ping
+         */
+        const val PING = 13
 
     }
 }

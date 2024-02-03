@@ -5,10 +5,6 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageCodec
 import org.slf4j.LoggerFactory
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 
 class MessageCodec : ByteToMessageCodec<Message>() {
 
@@ -35,11 +31,8 @@ class MessageCodec : ByteToMessageCodec<Message>() {
         //无意义的字节 : 用于对其填充使用
         out.writeByte(0xff)
 
-        //将正文序列化
-        val bos = ByteArrayOutputStream()
-        val oos = ObjectOutputStream(bos)
-        oos.writeObject(msg)
-        val bytes = bos.toByteArray()
+//        //将正文序列化
+        val bytes = MessageSerializer.Algorithm.JDK.serialize(msg)
 
         // 长度 : 占用 4 字节
         // 正文
@@ -60,9 +53,8 @@ class MessageCodec : ByteToMessageCodec<Message>() {
         val bytes = ByteArray(length)
         `in`.readBytes(bytes, 0, length)
 
-        //todo : 需要分析 type
-        val ois = ObjectInputStream(ByteArrayInputStream(bytes))
-        val message: Message = ois.readObject() as Message
+        val message: Any = MessageSerializer.Algorithm.JDK.deserialize(bytes)
+
         out.add(message)
         log.debug("magicNum : $magicNum, version : ${v.toInt()} , serializerType : ${serializerType.toInt()}, messageType : ${messageType.toInt()}, sequenceId : $sequenceId , length : $length")
         log.debug("message : {}", message)
