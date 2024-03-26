@@ -37,18 +37,6 @@ fun main() {
             .childHandler(object : ChannelInitializer<SocketChannel>() {
                 override fun initChannel(ch: SocketChannel) {
                     ch.pipeline()
-                        //用来判断读时间过长或写时间过长
-                        .addLast(IdleStateHandler(5,0,0))
-                        .addLast(object : ChannelDuplexHandler(){
-                            //用来触发 IdleStateHandler 发送的事件
-                            override fun userEventTriggered(ctx: ChannelHandlerContext, evt: Any) {
-                                evt as IdleStateEvent
-                                if (evt.state() == IdleState.READER_IDLE) {
-                                    println("已经超过 5s 没有读到数据")
-                                    ctx.channel().close()
-                                }
-                            }
-                        })
                         .addLast(MessageProcotolDecoder())
                         .addLast(logHandler)
                         .addLast(messageCodecSharable)

@@ -79,5 +79,15 @@ abstract class Message : Serializable {
          */
         const val PING = 13
 
+        /**
+         * RPC 请求
+         */
+        const val RPC_REQUEST_MESSAGE = 101
+
+        /**
+         * RPC 响应
+         */
+        const val RPC_RESPONSE_MESSAGE = 102
+
     }
 }
